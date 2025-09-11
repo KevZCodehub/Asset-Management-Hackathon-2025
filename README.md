@@ -32,7 +32,7 @@
 
 ## 📂 Data
 
-- **Full dataset**: Download from shared link (Google Drive / S3).
+- **Full dataset**: Download from shared link (download from the OneDrive).
 - **Sample data**: `data/sample.csv` included for quick testing.
 
 ## 🤝 Notes
