@@ -12,8 +12,6 @@ path = r"C:/Users/franr/source/Asset-Management-Hackathon-2025/data/text_us_2005
 with open(path, "rb") as f:
     df = pickle.load(f)
 
-print("Columns in dataset:", df.columns.tolist())
-
 # Load FinBERT
 tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
 sentiment_pipeline = pipeline("sentiment-analysis", model="ProsusAI/finbert")
@@ -88,22 +86,29 @@ def score_sentiment(text, max_tokens=510):
 
 # Filter out rows without gvkey first
 rows_to_process = df.dropna(subset=["gvkey"])
-# FOR TESTING ONLY: limit to first 100 rows
-rows_to_process = df.dropna(subset=["gvkey"]).iloc[0:2000]
+# FOR TESTING ONLY: limit to first few rows
+rows_to_process = df.dropna(subset=["gvkey"]).iloc[0:20]
 
 total_rows = len(rows_to_process)
 print(f"Total texts to process: {total_rows}\n")
 
 output = []
 for count, (i, row) in enumerate(rows_to_process.iterrows(), start=1):
-    text = row.get("rf", "")
-    sentiment_score = score_sentiment(text)
+    rf_score = score_sentiment(row.get("rf", ""))
+    mgmt_score = score_sentiment(row.get("mgmt", ""))
+
     output.append({
         "date": row.get("date"),
+        "cik": row.get("cik"),
+        "file_type": row.get("file_type"),
         "gvkey": row.get("gvkey"),
-        "sentiment_score": sentiment_score
+        "cusip": row.get("cusip"),
+        "year": row.get("year"),
+        "rf_sentiment_score": rf_score,
+        "mgmt_sentiment_score": mgmt_score
     })
     print(f"Processed {count}/{total_rows} texts, {total_rows - count} remaining", end="\r")
+
 
 elapsed = time.time() - start_time
 
